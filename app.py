@@ -16,12 +16,18 @@ books = pickle.load(open("books.pkl", "rb"))
 st.sidebar.header("📚 Book Recommender Login")
 user_ids = test_data['User-ID'].unique().tolist()
 selected_user = st.sidebar.selectbox("Select User ID (Simulated Login)", user_ids)
-
+# Optional: Rate a Book (simulated only)
+st.sidebar.markdown("### ⭐ Rate a Book")
+book_to_rate = st.sidebar.selectbox("Choose a book to rate", popular_books_test['Book-Title'].unique())
+rating = st.sidebar.slider("Your Rating (1-10)", 1, 10)
+if st.sidebar.button("Submit Rating"):
+    st.sidebar.success(f"You rated '{book_to_rate}' with {rating}/10! (This is a simulation)")
+    
 # Preprocess
 unique_books_test = popular_books_test.drop_duplicates(subset='Book-Title', keep='first').reset_index(drop=True)
 
 # Hybrid Recommender Function for Streamlit
-def hybrid_recommend_test(book_title_test, number=5):
+def hybrid_recommend_test(book_title_test,user_id_test=None, number=5):
     book_title_test = book_title_test.strip()
     matches_test = unique_books_test[unique_books_test['Book-Title'] == book_title_test]
 
@@ -42,8 +48,7 @@ def hybrid_recommend_test(book_title_test, number=5):
             content_dict_test[isbn] = score
 
     # -------- Collaborative Filtering --------
-    user_ids_who_rated_test = test_data[test_data['ISBN'] == input_book_test['ISBN']]['User-ID'].values
-
+    user_ids_who_rated_test = [user_id_test] if user_id_test else []
     collab_applicable_test = False
     collaborative_dict_test = {}
 
@@ -104,12 +109,13 @@ def hybrid_recommend_test(book_title_test, number=5):
 
 # ---- Streamlit UI ----
 st.set_page_config(page_title="📚 Book Recommender", layout="centered")
-st.title("📚 Hybrid Book Recommender")
+st.title("📖 Hybrid Book Recommendation System")
 
-book_titles = unique_books_test['Book-Title'].dropna().unique().tolist()
-book_choice = st.selectbox("Choose a book:", sorted(book_titles))
+book_choice = st.selectbox("Select a Book to Get Recommendations", popular_books_test['Book-Title'].unique())
+top_n = st.slider("How many recommendations do you want?", min_value=1, max_value=10, value=5)
 
-if st.button("Recommend"):
+if st.button("Get Recommendations"):
+    hybrid_recommend_test(book_choice, user_id_test=selected_user, number=top_n)
     with st.spinner("Generating recommendations..."):
         recs, warning, eval_data = hybrid_recommend_test(book_choice)
 
