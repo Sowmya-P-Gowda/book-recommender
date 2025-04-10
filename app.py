@@ -15,35 +15,35 @@ books = pickle.load(open('books.pkl', 'rb'))
 # -------------------- HYBRID RECOMMENDER --------------------
 def hybrid_recommend(book_title, top_n=5):
     # Content-based filtering
-    if book_title not in books['title'].values:
+    if book_title not in books['Book-Title'].values:
         return []
 
-    idx = books[books['title'] == book_title].index[0]
+    idx = books[books['Book-Title'] == book_title].index[0]
     sim_scores = list(enumerate(cosine_sim[idx]))
     sim_scores = sorted(sim_scores, key=lambda x: x[1], reverse=True)
     sim_scores = sim_scores[1:top_n + 1]
     content_indices = [i[0] for i in sim_scores]
-    content_recs = books.iloc[content_indices][['title', 'author']].copy()
+    content_recs = books.iloc[content_indices][['Book-Title', 'Book-Author']].copy()
     content_recs['method'] = 'Content'
 
     # Collaborative filtering
     if book_title in collab_sim_df.columns:
         collab_scores = collab_sim_df[book_title].sort_values(ascending=False)[1:top_n + 1]
         collab_titles = collab_scores.index.tolist()
-        collab_recs = books[books['title'].isin(collab_titles)][['title', 'author']].copy()
+        collab_recs = books[books['Book-Title'].isin(collab_titles)][['Book-Title', 'Book-Author']].copy()
         collab_recs['method'] = 'Collaborative'
     else:
-        collab_recs = pd.DataFrame(columns=['title', 'author', 'method'])
+        collab_recs = pd.DataFrame(columns=['Book-Title', 'Book-Author', 'method'])
 
     # Combine and return
-    combined = pd.concat([content_recs, collab_recs]).drop_duplicates(subset='title').head(top_n)
+    combined = pd.concat([content_recs, collab_recs]).drop_duplicates(subset='Book-Title').head(top_n)
     return combined
 
 # -------------------- STREAMLIT UI --------------------
 st.set_page_config(page_title="📚 Book Recommender", layout="wide")
 st.title("📚 Hybrid Book Recommendation System")
 
-book_list = books['title'].dropna().unique().tolist()
+book_list = books['Book-Title'].dropna().unique().tolist()
 book_choice = st.selectbox("Select a Book Title", sorted(book_list))
 
 if st.button("Recommend"):
