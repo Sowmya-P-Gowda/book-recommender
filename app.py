@@ -43,8 +43,8 @@ def hybrid_recommend(book_title, top_n=5):
 st.set_page_config(page_title="📚 Book Recommender", layout="wide")
 st.title("📚 Hybrid Book Recommendation System")
 
+books = pickle.load(open("popular_books_test.pkl", "rb"))
 book_list = books['Book-Title'].dropna().unique().tolist()
-book_choice = st.selectbox("Select a Book Title", sorted(book_list))
 
 if st.button("Recommend"):
     with st.spinner("Fetching recommendations..."):
