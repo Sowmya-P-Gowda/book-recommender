@@ -3,6 +3,9 @@ import pickle
 import pandas as pd
 from sklearn.metrics.pairwise import cosine_similarity
 
+user_ids = test_data['User-ID'].unique().tolist()
+selected_user = st.sidebar.selectbox("Select User ID (Simulated Login)", user_ids)
+
 # Load all required files
 popular_books_test = pickle.load(open("popular_books_test.pkl", "rb"))
 cosine_sim_test = pickle.load(open("cosine_sim_test.pkl", "rb"))
