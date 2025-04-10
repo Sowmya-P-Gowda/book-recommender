@@ -16,12 +16,7 @@ books = pickle.load(open("books.pkl", "rb"))
 st.sidebar.header("📚 Book Recommender Login")
 user_ids = test_data['User-ID'].unique().tolist()
 selected_user = st.sidebar.selectbox("Select User ID (Simulated Login)", user_ids)
-# Optional: Rate a Book (simulated only)
-st.sidebar.markdown("### ⭐ Rate a Book")
-book_to_rate = st.sidebar.selectbox("Choose a book to rate", popular_books_test['Book-Title'].unique())
-rating = st.sidebar.slider("Your Rating (1-10)", 1, 10)
-if st.sidebar.button("Submit Rating"):
-    st.sidebar.success(f"You rated '{book_to_rate}' with {rating}/10! (This is a simulation)")
+
     
 # Preprocess
 unique_books_test = popular_books_test.drop_duplicates(subset='Book-Title', keep='first').reset_index(drop=True)
