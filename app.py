@@ -116,6 +116,6 @@ if st.button("Recommend"):
 
             if eval_data:
                 user_id, precision, recall = eval_data
-                st.markdown("### 📊 Evaluation ")
+
                 
 
